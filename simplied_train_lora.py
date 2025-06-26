@@ -196,8 +196,8 @@ prompt_embeds, pooled_prompt_embeds = encode_prompt(
     clip_skip=None,
 )
 
-image_pil = load_image("https://huggingface.co/datasets/diffusers/diffusers-images-docs/resolve/main/cup.png")
-# image_pil = load_image("cup.png")
+# image_pil = load_image("https://huggingface.co/datasets/diffusers/diffusers-images-docs/resolve/main/cup.png")
+image_pil = load_image("cup.png")
 original_sizes = [(image_pil.height, image_pil.width)]
 size = resolution = 1024
 interpolation = getattr(transforms.InterpolationMode, "LANCZOS", None)
@@ -319,18 +319,10 @@ if torch.cuda.is_available():
 ##########################################################
 pipeline2 = StableDiffusionXLPipeline.from_pretrained(
     pretrained_model_name_or_path,
-    vae=vae,
-    tokenizer=tokenizer_one,
-    tokenizer_2=tokenizer_two,
-    text_encoder=accelerator.unwrap_model(text_encoder_one),
-    text_encoder_2=accelerator.unwrap_model(text_encoder_two),
 ).to(accelerator.device, dtype=torch.float32)
 # warnings from here: missing params
+print(os.path.join(output_dir, "pytorch_lora_weights.safetensors"))
 pipeline2.load_lora_weights(output_dir, weight_name="pytorch_lora_weights.safetensors")
 generator = torch.Generator(device=accelerator.device).manual_seed(0)
 # a broken image
 pipeline2(**pipeline_args, generator=generator).images[0].save("test_load_gen.jpg")
-
-
-
-    
